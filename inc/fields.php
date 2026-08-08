@@ -125,5 +125,41 @@ function portfolio_core_register_project_meta(): void
         );
     }
 }
+/**
+ * Traduit les valeurs techniques du statut d'un projet
+ * lors de leur affichage via les Block Bindings.
+ *
+ * @param mixed  $value       Valeur du binding.
+ * @param string $source_name Source du binding.
+ * @param array  $source_args Arguments du binding.
+ * @return mixed
+ */
+function portfolio_core_format_project_status_binding(
+    mixed $value,
+    string $source_name,
+    array $source_args
+): mixed {
+    if (
+        'core/post-meta' !== $source_name
+        || 'project_status' !== ($source_args['key'] ?? '')
+    ) {
+        return $value;
+    }
+
+    $statuses = array(
+        'ongoing'   => __('En cours', 'portfolio-core'),
+        'completed' => __('Terminé', 'portfolio-core'),
+        'archived'  => __('Archivé', 'portfolio-core'),
+    );
+
+    return $statuses[$value] ?? $value;
+}
+
+add_filter(
+    'block_bindings_source_value',
+    'portfolio_core_format_project_status_binding',
+    10,
+    3
+);
 add_action('init', 'portfolio_core_register_project_meta');
 add_action('acf/init', 'portfolio_core_register_project_fields');
