@@ -1,8 +1,8 @@
 # Portfolio Core
 
-Plugin WordPress personnalisé qui fournit la logique métier du portfolio utilisé par le thème `blog`.
+Plugin WordPress personnalisé qui fournit la logique métier du portfolio utilisé par le thème `blog` disponible ici : https://github.com/karim-khfr/blog
 
-Le plugin est volontairement indépendant du thème : il enregistre les contenus, taxonomies et champs métier, tandis que le thème reste responsable de leur présentation.
+Le plugin est volontairement indépendant du thème : il enregistre les contenus, taxonomies et champs métier, tandis que le thème reste responsable de leur présentation. Il fonctionne en lien avec SCF (Secure Custom Fields).
 
 ## Technologies
 
