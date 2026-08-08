@@ -81,7 +81,7 @@ function portfolio_core_register_project_technology_taxonomy(): void
         'labels'            => $labels,
         'public'            => true,
         'publicly_queryable' => true,
-        'hierarchical'      => false,
+        'hierarchical'      => true,
         'show_ui'           => true,
         'show_admin_column' => true,
         'show_in_nav_menus' => true,
