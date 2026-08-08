@@ -23,8 +23,8 @@ function portfolio_core_register_project_fields(): void
 
     acf_add_local_field_group(
         array(
-            'key'   => 'group_portfolio_core_project',
-            'title' => __('Informations du projet', 'portfolio-core'),
+            'key'    => 'group_portfolio_core_project',
+            'title'  => __('Informations du projet', 'portfolio-core'),
             'fields' => array(
                 array(
                     'key'      => 'field_portfolio_core_project_year',
@@ -97,6 +97,7 @@ function portfolio_core_register_project_fields(): void
         )
     );
 }
+
 /**
  * Enregistre les métadonnées Projet pour l'API REST et les Block Bindings.
  *
@@ -125,6 +126,7 @@ function portfolio_core_register_project_meta(): void
         );
     }
 }
+
 /**
  * Traduit les valeurs techniques du statut d'un projet
  * lors de leur affichage via les Block Bindings.
@@ -155,11 +157,100 @@ function portfolio_core_format_project_status_binding(
     return $statuses[$value] ?? $value;
 }
 
+/**
+ * Masque les informations facultatives d'un projet lorsqu'elles sont vides.
+ *
+ * @param string $block_content Contenu HTML rendu du bloc.
+ * @param array  $block         Données du bloc.
+ * @return string
+ */
+function portfolio_core_hide_empty_project_blocks(
+    string $block_content,
+    array $block
+): string {
+    if (! is_singular('project')) {
+        return $block_content;
+    }
+
+    $post_id = get_queried_object_id();
+
+    if (! $post_id) {
+        return $block_content;
+    }
+
+    $class_name = $block['attrs']['className'] ?? '';
+
+    $optional_meta = array(
+        'single-project-meta__item--year'   => 'project_year',
+        'single-project-meta__item--status' => 'project_status',
+        'single-project-meta__item--role'   => 'project_role',
+        'single-project-meta__item--client' => 'project_client',
+    );
+
+    foreach ($optional_meta as $class => $meta_key) {
+        if (
+            str_contains($class_name, $class)
+            && '' === (string) get_post_meta($post_id, $meta_key, true)
+        ) {
+            return '';
+        }
+    }
+
+    if (
+        str_contains($class_name, 'single-project-action--project')
+        && '' === (string) get_post_meta($post_id, 'project_url', true)
+    ) {
+        return '';
+    }
+
+    if (
+        str_contains($class_name, 'single-project-action--repository')
+        && '' === (string) get_post_meta(
+            $post_id,
+            'project_repository_url',
+            true
+        )
+    ) {
+        return '';
+    }
+
+    if (str_contains($class_name, 'single-project-actions')) {
+        $project_url = get_post_meta(
+            $post_id,
+            'project_url',
+            true
+        );
+
+        $repository_url = get_post_meta(
+            $post_id,
+            'project_repository_url',
+            true
+        );
+
+        if (
+            '' === (string) $project_url
+            && '' === (string) $repository_url
+        ) {
+            return '';
+        }
+    }
+
+    return $block_content;
+}
+
 add_filter(
     'block_bindings_source_value',
     'portfolio_core_format_project_status_binding',
     10,
     3
 );
+
+add_filter(
+    'render_block',
+    'portfolio_core_hide_empty_project_blocks',
+    10,
+    2
+);
+
 add_action('init', 'portfolio_core_register_project_meta');
 add_action('acf/init', 'portfolio_core_register_project_fields');
