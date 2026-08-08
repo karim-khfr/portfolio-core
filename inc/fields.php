@@ -97,4 +97,33 @@ function portfolio_core_register_project_fields(): void
         )
     );
 }
+/**
+ * Enregistre les métadonnées Projet pour l'API REST et les Block Bindings.
+ *
+ * @return void
+ */
+function portfolio_core_register_project_meta(): void
+{
+    $meta_fields = array(
+        'project_year',
+        'project_status',
+        'project_role',
+        'project_client',
+        'project_url',
+        'project_repository_url',
+    );
+
+    foreach ($meta_fields as $meta_key) {
+        register_post_meta(
+            'project',
+            $meta_key,
+            array(
+                'type'         => 'string',
+                'single'       => true,
+                'show_in_rest' => true,
+            )
+        );
+    }
+}
+add_action('init', 'portfolio_core_register_project_meta');
 add_action('acf/init', 'portfolio_core_register_project_fields');
